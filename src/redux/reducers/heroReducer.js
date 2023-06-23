@@ -1,4 +1,4 @@
-export default function rootReducer(
+export default function heroReducer(
     currentState = {
       getItemsFlag: false,
       items: {},
