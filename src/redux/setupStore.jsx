@@ -9,6 +9,7 @@ const rootReducer = {
 
 export const setupStore = () => configureStore({ reducer: rootReducer });
 
+// Nestor's setup
 // The store now has redux-thunk added and the Redux DevTools Extension is turned on
 
 // import {createStore, applyMiddleware, compose} from 'redux';
