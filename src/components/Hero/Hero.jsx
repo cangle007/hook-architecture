@@ -1,6 +1,6 @@
-import { useEffect } from "react";
-import { useSelector } from "react-redux";
-import useUsersData from "../../redux/hooks/useDataProcess";
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import useUsersData from '../../redux/hooks/useDataProcess';
 
 const Hero = () => {
   const { getUsersDataProcess, getHeroProcess } = useUsersData();
@@ -16,12 +16,12 @@ const Hero = () => {
 
   return (
     <>
-      <p>Hero COMPONENT</p>
+      <p>This is Hero component</p>
       <div>pokemonName: {pokemonName}</div>
       <div>superHero: {heroName}</div>
       <div>
         {userNames.map((obj) => {
-          return <div>{obj.name + " - " + obj.age}</div>;
+          return <div>{obj.name + ' - ' + obj.age}</div>;
         })}
       </div>
     </>
