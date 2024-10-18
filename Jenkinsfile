@@ -12,20 +12,17 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the prod branch'
-                // Add your build steps here
+                // Add your build steps here (e.g., npm, Maven, etc.)
             }
         }
-        stage('Deploy to AWS') {
+        stage('Upload to S3') {
             when {
                 branch 'prod'  // Only deploy if the branch is prod
             }
             steps {
-                withCredentials([usernamePassword(credentialsId: 'aws-credentials', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                    sh '''
-                    export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-                    export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-                    aws s3 cp ./build s3://your-bucket --recursive
-                    '''
+                withAWS(credentials: 'aws-credentials', region: "$AWS_REGION") {
+                    // Use Jenkins' S3 upload functionality
+                    s3Upload(bucket: 'your-bucket-name', includePathPattern: 'build/**')
                 }
             }
         }
