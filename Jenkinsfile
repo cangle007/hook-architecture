@@ -22,7 +22,7 @@ pipeline {
             steps {
                 withAWS(credentials: 'aws-credentials', region: "$AWS_REGION") {
                     // Use Jenkins' S3 upload functionality
-                    s3Upload(bucket: 'your-bucket-name', includePathPattern: 'build/**')
+                    s3Upload(bucket: 'hook-architecture', includePathPattern: 'build/**')
                 }
             }
         }
