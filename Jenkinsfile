@@ -12,7 +12,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the prod branch'
-                // Add your build steps here (e.g., npm install && npm run build)
+                // Add your build steps here
             }
         }
         stage('Upload to S3') {
@@ -21,10 +21,8 @@ pipeline {
             }
             steps {
                 withAWS(credentials: 'aws-credentials', region: "$AWS_REGION") {
-                    // Upload the built project to S3 using AWS CLI
-                    sh '''
-                    aws s3 cp ./build s3://hook-architecture --recursive
-                    '''
+                    // Use AWS CLI Plugin
+                    s3Upload(bucket: 'hook-architecture', includePathPattern: 'build/**')
                 }
             }
         }
