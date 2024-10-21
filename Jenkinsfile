@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'node:16'  // Use the official Node.js Docker image
-            args '-u root'   // Run as root to allow package installations
-        }
-    }
+    agent any
     environment {
         AWS_REGION = 'us-east-1'  // Set your AWS region
     }
@@ -12,6 +7,20 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 git branch: 'prod', url: 'https://github.com/cangle007/hook-architecture.git'
+            }
+        }
+        stage('Install Node.js') {
+            steps {
+                sh '''
+                # Check if node is installed, if not install it
+                if ! [ -x "$(command -v node)" ]; then
+                    echo "Node.js is not installed, installing..."
+                    curl -sL https://deb.nodesource.com/setup_16.x | bash -
+                    apt-get install -y nodejs
+                else
+                    echo "Node.js is already installed"
+                fi
+                '''
             }
         }
         stage('Install Dependencies') {
