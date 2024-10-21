@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        AWS_REGION = 'us-east-1'  // Set your AWS region
+        AWS_REGION = 'us-east-1'
     }
     stages {
         stage('Checkout Code') {
@@ -9,30 +9,20 @@ pipeline {
                 git branch: 'prod', url: 'https://github.com/cangle007/hook-architecture.git'
             }
         }
-        stage('Install Dependencies') {
+        stage('Build and Upload with Docker') {
             steps {
-                echo 'Installing dependencies...'
-                // Install npm dependencies
-                sh 'npm install'
-            }
-        }
-        stage('Build') {
-            steps {
-                echo 'Building the React application...'
-                // Run the React build process
-                sh 'npm run build'
-            }
-        }
-        stage('Upload to S3') {
-            when {
-                branch 'prod'  // Only deploy if the branch is prod
-            }
-            steps {
-                withAWS(credentials: 'aws-credentials', region: "$AWS_REGION") {
-                    // Upload the newly built project to S3
-                    sh '''
-                    aws s3 cp ./build s3://hook-architecture --recursive
-                    '''
+                script {
+                    // Run Docker container for building and uploading
+                    docker.image('node:18-alpine').inside('-v $WORKSPACE:/app -v /output:/output') {
+                        sh 'docker build -t react-build .'
+                        sh 'docker run --rm -v /output:/output react-build'
+                    }
+                    withAWS(credentials: 'aws-credentials', region: "$AWS_REGION") {
+                        echo 'Uploading build to S3...'
+                        sh '''
+                        aws s3 cp /output s3://hook-architecture --recursive
+                        '''
+                    }
                 }
             }
         }
