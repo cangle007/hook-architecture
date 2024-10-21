@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'node:16'  // Use the official Node.js Docker image
+            args '-u root'   // Run as root to allow package installations
+        }
+    }
     environment {
         AWS_REGION = 'us-east-1'  // Set your AWS region
     }
@@ -12,15 +17,13 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo 'Installing dependencies...'
-                // Install npm dependencies
-                sh 'npm install'
+                sh 'npm install'  // Install npm dependencies
             }
         }
         stage('Build') {
             steps {
                 echo 'Building the React application...'
-                // Run the React build process
-                sh 'npm run build'
+                sh 'npm run build'  // Run the React build process
             }
         }
         stage('Upload to S3') {
@@ -29,7 +32,6 @@ pipeline {
             }
             steps {
                 withAWS(credentials: 'aws-credentials', region: "$AWS_REGION") {
-                    // Upload the newly built project to S3
                     sh '''
                     aws s3 cp ./build s3://hook-architecture --recursive
                     '''
