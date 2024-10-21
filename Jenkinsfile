@@ -9,20 +9,45 @@ pipeline {
                 git branch: 'prod', url: 'https://github.com/cangle007/hook-architecture.git'
             }
         }
-        stage('Build and Upload with Docker') {
+        stage('Install Node.js') {
             steps {
                 script {
-                    // Run Docker container for building and uploading
-                    docker.image('node:18-alpine').inside('-v $WORKSPACE:/app -v /output:/output') {
-                        sh 'docker build -t react-build .'
-                        sh 'docker run --rm -v /output:/output react-build'
-                    }
-                    withAWS(credentials: 'aws-credentials', region: "$AWS_REGION") {
-                        echo 'Uploading build to S3...'
+                    // Check if Node.js is installed, if not install it
+                    if (!fileExists('/usr/bin/node')) {
+                        echo "Node.js is not installed, installing..."
                         sh '''
-                        aws s3 cp /output s3://hook-architecture --recursive
+                        curl -sL https://deb.nodesource.com/setup_18.x | bash -
+                        apt-get update
+                        apt-get install -y nodejs
                         '''
+                    } else {
+                        echo "Node.js is already installed"
                     }
+                }
+            }
+        }
+        stage('Install Dependencies') {
+            steps {
+                echo 'Installing dependencies...'
+                sh 'npm install'  // Install npm dependencies
+            }
+        }
+        stage('Build') {
+            steps {
+                echo 'Building the React application...'
+                sh 'npm run build'  // Run the React build process
+            }
+        }
+        stage('Upload to S3') {
+            when {
+                branch 'prod'  // Only deploy if the branch is prod
+            }
+            steps {
+                withAWS(credentials: 'aws-credentials', region: "$AWS_REGION") {
+                    echo 'Uploading build to S3...'
+                    sh '''
+                    aws s3 cp ./build s3://hook-architecture --recursive
+                    '''
                 }
             }
         }
