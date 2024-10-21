@@ -11,16 +11,19 @@ pipeline {
         }
         stage('Install Node.js') {
             steps {
-                sh '''
-                # Check if node is installed, if not install it
-                if ! [ -x "$(command -v node)" ]; then
-                    echo "Node.js is not installed, installing..."
-                    curl -sL https://deb.nodesource.com/setup_16.x | bash -
-                    apt-get install -y nodejs
-                else
-                    echo "Node.js is already installed"
-                fi
-                '''
+                script {
+                    // Check if Node.js is installed, if not install it
+                    if (!fileExists('/usr/bin/node')) {
+                        echo "Node.js is not installed, installing..."
+                        sh '''
+                        curl -sL https://deb.nodesource.com/setup_18.x | bash -
+                        apt-get update
+                        apt-get install -y nodejs
+                        '''
+                    } else {
+                        echo "Node.js is already installed"
+                    }
+                }
             }
         }
         stage('Install Dependencies') {
@@ -41,6 +44,7 @@ pipeline {
             }
             steps {
                 withAWS(credentials: 'aws-credentials', region: "$AWS_REGION") {
+                    echo 'Uploading build to S3...'
                     sh '''
                     aws s3 cp ./build s3://hook-architecture --recursive
                     '''
