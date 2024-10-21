@@ -16,7 +16,7 @@ const Hero = () => {
 
   return (
     <>
-      <p>Hero COMPONENT by Cang Le</p>
+      <p>Hero COMPONENT by TonyTony</p>
       <div>pokemonName: {pokemonName}</div>
       <div>superHero: {heroName}</div>
       <div>
