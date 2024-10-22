@@ -10,9 +10,14 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
+# Install http-server globally
+RUN npm install -g http-server
+
 # Copy the rest of the application files
 COPY . .
 
 # Build the React application
 RUN npm run build
 
+# Serve the build directory using http-server
+CMD ["http-server", "build"]
