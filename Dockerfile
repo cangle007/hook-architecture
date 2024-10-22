@@ -16,5 +16,3 @@ COPY . .
 # Build the React application
 RUN npm run build
 
-# Define the output directory
-CMD ["sh", "-c", "cp -r ./build /output"]

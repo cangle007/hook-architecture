@@ -14,15 +14,21 @@ pipeline {
                 git branch: 'prod', url: 'https://github.com/cangle007/hook-architecture.git'
             }
         }
-        stage('Build and Upload with Docker') {
+        stage('Build Docker Image') {
             steps {
                 script {
-                    docker.image('node:18-alpine').inside('-v $WORKSPACE:/app -v ~/.aws:/root/.aws -v /output:/output') {
+                    // Build the Docker image from your Dockerfile
+                    docker.build('hook-architecture:1.0')
+                }
+            }
+        }
+        stage('Run Build and Upload to S3') {
+            steps {
+                script {
+                    // Use the Docker image built in the previous stage
+                    docker.image('hook-architecture:1.0').inside('-v ~/.aws:/root/.aws') {
                         sh '''
-                        npm install
-                        npm run build
-                        cp -r ./build /output
-                        aws s3 sync /output s3://hook-architecture --delete --cache-control "max-age=0, no-cache, no-store, must-revalidate"
+                        aws s3 sync /app/build s3://hook-architecture --delete --cache-control "max-age=0, no-cache, no-store, must-revalidate"
                         '''
                     }
                 }
