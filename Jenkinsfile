@@ -21,8 +21,14 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build the Docker image from your Dockerfile
-                    docker.build('hook-architecture:2.0')
+                    // Use Jenkins credentials to authenticate with Docker registry
+                    withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        // Docker login using credentials
+                        sh "docker login -u $DOCKER_USER -p $DOCKER_PASS"
+
+                        // Build the Docker image from the Dockerfile
+                        docker.build('hook-architecture:2.0')
+                    }
                 }
             }
         }
