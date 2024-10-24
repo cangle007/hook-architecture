@@ -1,5 +1,9 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'hook-architecture:2.0'
+        }
+    }
     environment {
         AWS_REGION = 'us-east-1'  // Set your AWS region
     }
