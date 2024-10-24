@@ -18,7 +18,7 @@ pipeline {
             steps {
                 script {
                     // Build the Docker image from your Dockerfile
-                    docker.build('hook-architecture:1.0')
+                    docker.build('hook-architecture:2.0')
                 }
             }
         }
@@ -26,7 +26,7 @@ pipeline {
             steps {
                 script {
                     // Use the Docker image built in the previous stage
-                    docker.image('hook-architecture:1.0').inside('-v ~/.aws:/root/.aws') {
+                    docker.image('hook-architecture:2.0').inside('-v ~/.aws:/root/.aws') {
                         sh '''
                         aws s3 sync /app/build s3://hook-architecture --delete --cache-control "max-age=0, no-cache, no-store, must-revalidate"
                         '''
