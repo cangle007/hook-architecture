@@ -1,10 +1,8 @@
 pipeline {
     agent any
-
     environment {
-        AWS_REGION = 'us-east-1'  // Set your AWS region
+        AWS_REGION = 'us-east-1'
     }
-
     stages {
         stage('Cleanup') {
             steps {
