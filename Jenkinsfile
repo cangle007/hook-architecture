@@ -1,12 +1,10 @@
 pipeline {
-    agent {
-        docker {
-            image 'hook-architecture:2.0'
-        }
-    }
+    agent any
+
     environment {
         AWS_REGION = 'us-east-1'  // Set your AWS region
     }
+
     stages {
         stage('Cleanup') {
             steps {
@@ -16,15 +14,22 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 git branch: 'prod', url: 'https://github.com/cangle007/hook-architecture.git'
+                sh "ls -ltr"
             }
         }
         stage('Build Docker Image') {
             steps {
                 script {
                     // Use Jenkins credentials to authenticate with Docker registry
-                    withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    withCredentials([usernamePassword(credentialsId: 'DockerCredentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                         // Docker login using credentials
                         sh "docker login -u $DOCKER_USER -p $DOCKER_PASS"
+
+                        sh '''
+                            echo ${DockerCredentials}
+                            echo ${DOCKER_USER}
+                            echo ${DOCKER_PASS}
+                        '''
 
                         // Build the Docker image from the Dockerfile
                         docker.build('hook-architecture:2.0')
