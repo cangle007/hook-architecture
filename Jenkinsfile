@@ -15,6 +15,11 @@ pipeline {
                 sh "ls -ltr"
             }
         }
+        stage('Print PATH') {
+            steps {
+                sh 'echo $PATH'
+            }
+        }
         stage('Build Docker Image') {
             steps {
                 script {
