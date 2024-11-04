@@ -15,6 +15,11 @@ pipeline {
                 sh "ls -ltr"
             }
         }
+        stage('Verify Docker Access') {
+            steps {
+                sh 'docker info'
+            }
+        }
         stage('Print PATH') {
             steps {
                 sh 'echo $PATH'
