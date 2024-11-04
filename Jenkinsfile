@@ -2,6 +2,7 @@ pipeline {
     agent any
     environment {
         AWS_REGION = 'us-east-1'
+        DOCKER_HOST = "tcp://host.docker.internal:2375"
     }
     stages {
         stage('Cleanup') {
